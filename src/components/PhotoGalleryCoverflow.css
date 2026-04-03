@@ -1,0 +1,31 @@
+/* Swiper pagination — faol nuqta ko‘k, qolganlari kulrang */
+.photo-gallery-coverflow .swiper-pagination {
+  bottom: 0 !important;
+}
+
+.photo-gallery-coverflow .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  margin: 0 5px !important;
+  background: #cbd5e1;
+  opacity: 1;
+}
+
+.photo-gallery-coverflow .swiper-pagination-bullet-active {
+  background: #2563eb;
+  transform: scale(1.1);
+}
+
+.dark .photo-gallery-coverflow .swiper-pagination-bullet {
+  background: #64748b;
+}
+
+.dark .photo-gallery-coverflow .swiper-pagination-bullet-active {
+  background: #22d3ee;
+}
+
+.photo-gallery-swiper {
+  overflow: hidden;
+  padding-top: 0.5rem;
+  padding-bottom: 2.75rem;
+}
