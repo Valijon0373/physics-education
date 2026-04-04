@@ -168,7 +168,7 @@ export function Layout() {
       </main>
 
       <footer className="border-t border-slate-200 py-8 text-center text-sm text-slate-500 dark:border-white/10">
-        <p>Mexanika fizikasi — ta'lim loyihasi (namuna kontent)</p>
+        <p>Mexanika fizikasi — ta'lim loyihasi</p>
       </footer>
     </div>
   )

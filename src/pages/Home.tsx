@@ -62,7 +62,7 @@ export function Home() {
             {
               href: 'https://thephysicsaviary.com/uz/',
               title: 'Virtual laboratoriya',
-              desc: 'The Physics Aviary — onlayn fizika simulyatsiyalari va virtual tajribalar (o‘zbek interfeysi).',
+              desc: 'The Physics Aviary — onlayn fizika simulyatsiyalari va virtual tajribalar.',
               accent: 'from-violet-500/20 to-transparent',
             },
             {
@@ -93,7 +93,7 @@ export function Home() {
                   {card.desc}
                 </p>
                 <span className="mt-4 text-sm font-medium text-cyan-600 dark:text-cyan-400/90">
-                  {'href' in card ? 'Saytga o‘tish ↗' : 'Ko‘rish →'}
+                  {'href' in card ? 'Bajarish' : 'Ko‘rish →'}
                 </span>
               </>
             )
