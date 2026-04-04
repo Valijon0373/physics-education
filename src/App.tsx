@@ -1,6 +1,7 @@
-import { lazy } from 'react'
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
+import { PageLoader } from './components/PageLoader'
 
 const Home = lazy(async () => {
   const m = await import('./pages/Home')
@@ -29,15 +30,43 @@ const Guides = lazy(async () => {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter unstable_useTransitions={false}>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="darslar" element={<Lessons />} />
-          <Route path="darslar/:lessonId" element={<LessonDetail />} />
+          <Route
+            path="darslar"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Lessons />
+              </Suspense>
+            }
+          />
+          <Route
+            path="darslar/:lessonId"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <LessonDetail />
+              </Suspense>
+            }
+          />
           <Route path="galereya" element={<Gallery />} />
-          <Route path="tajribalar" element={<Experiments />} />
-          <Route path="qollanmalar" element={<Guides />} />
+          <Route
+            path="tajribalar"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Experiments />
+              </Suspense>
+            }
+          />
+          <Route
+            path="qollanmalar"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Guides />
+              </Suspense>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

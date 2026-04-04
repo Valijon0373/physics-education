@@ -107,7 +107,7 @@ export function Layout() {
 
       <div
         className={[
-          'fixed inset-0 z-[150] bg-slate-900/45 backdrop-blur-[2px] transition-opacity duration-500 ease-in-out md:hidden',
+          'fixed inset-0 z-[150] bg-slate-900/45 backdrop-blur-[2px] transition-opacity duration-700 ease-in-out md:hidden',
           menuOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
         ].join(' ')}
         onClick={() => setMenuOpen(false)}
@@ -117,12 +117,23 @@ export function Layout() {
       <aside
         id="mobile-menu"
         className={[
-          'fixed inset-y-0 right-0 z-[160] flex w-[min(88vw,300px)] flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-500 ease-in-out dark:border-white/10 dark:bg-slate-950 md:hidden',
+          'fixed inset-y-0 right-0 z-[160] flex w-[min(88vw,300px)] flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-700 ease-in-out dark:border-white/10 dark:bg-slate-950 md:hidden',
           menuOpen ? 'translate-x-0' : 'pointer-events-none translate-x-full',
         ].join(' ')}
         aria-hidden={!menuOpen}
       >
-        <div className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-6">
+        <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-4 dark:border-white/10">
+          <span className="text-lg font-semibold text-slate-900 dark:text-white">Menu</span>
+          <button
+            type="button"
+            className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Menyuni yopish"
+          >
+            <IconX className="h-6 w-6" />
+          </button>
+        </div>
+        <div className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
           <NavLink to="/" end className={mobileNavLinkClass} onClick={() => setMenuOpen(false)}>
             Bosh sahifa
           </NavLink>
@@ -151,7 +162,7 @@ export function Layout() {
       </aside>
 
       <main className="relative mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">
-        <Suspense fallback={<PageLoader />}>
+        <Suspense key={location.pathname} fallback={<PageLoader />}>
           <Outlet />
         </Suspense>
       </main>
