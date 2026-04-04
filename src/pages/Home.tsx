@@ -2,42 +2,52 @@ import { Link } from 'react-router-dom'
 import { PhotoGalleryCoverflow } from '../components/PhotoGalleryCoverflow'
 import { galleryItems } from '../data/content'
 
+/** Qo‘ying: `public/hero-banner.png` (talabalar / ochiq havoda o‘qish fon rasmi). */
+const HERO_BG = '/hero-banner.png'
+
 export function Home() {
   return (
     <div className="space-y-16">
-      <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-cyan-50/50 px-6 py-16 shadow-sm dark:border-white/10 dark:from-slate-900 dark:via-slate-900 dark:to-cyan-950/40 dark:shadow-none">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl dark:bg-cyan-500/20" />
-        <div className="pointer-events-none absolute -bottom-16 left-10 h-48 w-48 rounded-full bg-violet-400/15 blur-3xl dark:bg-violet-500/15" />
-        <div className="relative max-w-2xl space-y-6">
-          <p className="text-sm font-medium uppercase tracking-widest text-cyan-600 dark:text-cyan-400/90">
-            Fizika · Mexanika
-          </p>
-          <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-            Video darslar, mashqlar va tajribalar — bitta joyda
+      <section
+        className="relative overflow-hidden rounded-3xl border border-white/15 shadow-md dark:border-white/10"
+        aria-labelledby="home-hero-heading"
+      >
+        <div
+          className="absolute inset-0 bg-slate-900/25 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `linear-gradient(rgba(20, 30, 48, 0.28), rgba(20, 30, 48, 0.28)), url(${HERO_BG})`,
+          }}
+          role="img"
+          aria-hidden
+        />
+        <div className="relative z-10 flex min-h-[min(70vh,32rem)] flex-col items-center justify-center px-5 py-16 text-center sm:min-h-[min(75vh,36rem)] sm:px-8">
+          <h1
+            id="home-hero-heading"
+            className="font-display max-w-4xl text-2xl font-bold uppercase leading-snug tracking-wide drop-shadow-[0_2px_14px_rgba(0,0,0,0.55)] sm:text-3xl md:text-4xl lg:text-[2.65rem] lg:leading-tight"
+          >
+            <span className="text-[#F39200]">7-sinf</span>{' '}
+            <span className="text-white">Fizikada Mexanika</span>
+            <br />
+            <span className="text-white">O&apos;qitish</span>
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
-            O‘quvchilar darsni ko‘rib, yonida zudlik bilan mashq qiladi;
-            fotogaleriya va qo‘llanmalar bilan sinf yoki masofaviy ta‘limni
-            boyitishingiz mumkin.
-          </p>
-          <div className="flex flex-wrap gap-3 pt-2">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/darslar"
-              className="inline-flex items-center justify-center rounded-xl bg-cyan-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/25 transition hover:bg-cyan-600 dark:text-slate-950 dark:hover:bg-cyan-400"
+              className="inline-flex items-center justify-center rounded-md bg-[#F39200] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition hover:bg-[#d98300] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F39200]"
             >
-              Darslarni ochish
+              Ba&apos;tafsil…
             </Link>
             <Link
-              to="/tajribalar"
-              className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+              to="/muallif"
+              className="inline-flex items-center justify-center rounded-md border-2 border-white/90 bg-transparent px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              Tajribalar
+              Muallif
             </Link>
           </div>
         </div>
       </section>
 
-      <section>
+      <section id="bolimlar">
         <h2 className="font-display mb-8 text-2xl font-semibold text-slate-900 dark:text-white">
           Bo‘limlar
         </h2>

@@ -27,6 +27,10 @@ const Guides = lazy(async () => {
   const m = await import('./pages/Guides')
   return { default: m.Guides }
 })
+const Owner = lazy(async () => {
+  const m = await import('./pages/Owner')
+  return { default: m.Owner }
+})
 
 export default function App() {
   return (
@@ -64,6 +68,14 @@ export default function App() {
             element={
               <Suspense fallback={<PageLoader />}>
                 <Guides />
+              </Suspense>
+            }
+          />
+          <Route
+            path="muallif"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Owner />
               </Suspense>
             }
           />
