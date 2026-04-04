@@ -50,9 +50,9 @@ export function Home() {
               accent: 'from-cyan-500/20 to-transparent',
             },
             {
-              to: '/galereya',
-              title: 'Fotogaleriya',
-              desc: "Laboratoriya va darsdan kadrlar — Coverflow ko‘rinishida.",
+              href: 'https://thephysicsaviary.com/uz/',
+              title: 'Virtual laboratoriya',
+              desc: 'The Physics Aviary — onlayn fizika simulyatsiyalari va virtual tajribalar (o‘zbek interfeysi).',
               accent: 'from-violet-500/20 to-transparent',
             },
             {
@@ -67,12 +67,12 @@ export function Home() {
               desc: "Formulalar, namunaviy hisobotlar — yuklab olish uchun.",
               accent: 'from-emerald-500/15 to-transparent',
             },
-          ].map((card) => (
-            <li key={card.to}>
-              <Link
-                to={card.to}
-                className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-cyan-300 hover:shadow-md dark:border-white/10 dark:bg-slate-900/50 dark:hover:border-cyan-500/30 dark:hover:bg-slate-900"
-              >
+          ].map((card) => {
+            const key = 'href' in card ? card.href : card.to
+            const className =
+              'group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-cyan-300 hover:shadow-md dark:border-white/10 dark:bg-slate-900/50 dark:hover:border-cyan-500/30 dark:hover:bg-slate-900'
+            const inner = (
+              <>
                 <div
                   className={`mb-4 h-1 w-12 rounded-full bg-gradient-to-r ${card.accent}`}
                 />
@@ -83,11 +83,29 @@ export function Home() {
                   {card.desc}
                 </p>
                 <span className="mt-4 text-sm font-medium text-cyan-600 dark:text-cyan-400/90">
-                  Ko‘rish →
+                  {'href' in card ? 'Saytga o‘tish ↗' : 'Ko‘rish →'}
                 </span>
-              </Link>
-            </li>
-          ))}
+              </>
+            )
+            return (
+              <li key={key}>
+                {'href' in card ? (
+                  <a
+                    href={card.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={className}
+                  >
+                    {inner}
+                  </a>
+                ) : (
+                  <Link to={card.to} className={className}>
+                    {inner}
+                  </Link>
+                )}
+              </li>
+            )
+          })}
         </ul>
       </section>
 

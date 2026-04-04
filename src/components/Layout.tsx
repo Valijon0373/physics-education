@@ -94,7 +94,7 @@ export function Layout() {
 
           <button
             type="button"
-            className="relative z-[170] inline-flex rounded-lg p-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10 md:hidden"
+            className="relative z-[170] inline-flex shrink-0 rounded-lg p-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10 md:hidden"
             onClick={() => setMenuOpen((o) => !o)}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
@@ -143,9 +143,10 @@ export function Layout() {
           >
             Qo'llanmalar
           </NavLink>
-        </div>
-        <div className="border-t border-slate-200 p-4 dark:border-white/10">
-          <ThemeToggle />
+
+          <div className="mt-3 border-t border-slate-200 pt-4 dark:border-white/10">
+            <ThemeToggle variant="mobile-row" />
+          </div>
         </div>
       </aside>
 
