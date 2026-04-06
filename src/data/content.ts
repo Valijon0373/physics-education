@@ -27,9 +27,17 @@ export type GalleryItem = {
 export type Experiment = {
   id: string
   title: string
+  /** YouTube embed URL (youtube.com/embed/...) */
+  videoEmbedUrl: string
+  /** Tajriba haqida qisqacha izoh */
+  description: string
   goal: string
   materials: string[]
   steps: string[]
+  /** Nima kuzatish/kayd qilish kerak */
+  observations?: string[]
+  /** Kutiladigan natija */
+  expectedResult?: string
   safety?: string
 }
 
@@ -189,6 +197,9 @@ export const experiments: Experiment[] = [
   {
     id: 'exp1',
     title: "Erkin tushish tezlanishi g'",
+    videoEmbedUrl: 'https://www.youtube.com/embed/0jHsq36_NTU',
+    description:
+      "Bu tajriba orqali erkin tushish vaqtini o‘lchab, Yerning tortishish tezlanishini (g) taxminiy hisoblaymiz. O‘lchovlarni bir necha marta takrorlash va o‘rtacha qiymat olish xatoni kamaytiradi.",
     goal: "Yer sharini tezlanishini sodda usul bilan baholash.",
     materials: [
       "Metal shar",
@@ -201,11 +212,13 @@ export const experiments: Experiment[] = [
       "Shar erkin tashlang, tushish vaqtini 3 marta o'lchang.",
       "O'rtacha vaqt orqali g' ≈ 2h/t² ni hisoblang.",
     ],
-    safety: "Oynani himoya qiling; shar pastdan tashlansin.",
   },
   {
     id: 'exp2',
     title: 'Ishqalanish burchagi',
+    videoEmbedUrl: 'https://www.youtube.com/embed/4k0E5Jt6Efc',
+    description:
+      "Qiyalik burchagi ortgani sari og‘irlik kuchining tekislik bo‘ylab tarkibi oshadi. Blok sirg‘ala boshlagan “chegara” holatni topib, ishqalanish xossalarini amaliy kuzatamiz.",
     goal: "Tekis plitalarda maksimal burchakni topish.",
     materials: [
       "Qiyalik qilinishi mumkin bo'lgan taxta",
@@ -217,10 +230,19 @@ export const experiments: Experiment[] = [
       "Blok sirg'alishni boshlagan paytdagi burchakni yozib oling.",
       "Natijani sinfdoshlar bilan solishtiring.",
     ],
+    observations: [
+      "Sirg‘alish boshlanish burchagini 3–5 marta o‘lchab, o‘rtachasini oling.",
+      "Turli yuzalar (qog‘oz, mato, yog‘och) bilan solishtirib ko‘ring.",
+    ],
+    expectedResult:
+      "Blok sirg‘ala boshlaydigan burchak bir xil sharoitda yaqin qiymatlarda chiqadi; sirt qo‘polroq bo‘lsa, bu burchak kattaroq bo‘ladi.",
   },
   {
     id: 'exp3',
     title: 'Prujina qattaligi',
+    videoEmbedUrl: 'https://www.youtube.com/embed/3I9FQk9F7wI',
+    description:
+      "Yuk oshgani sari prujina cho‘zilishi deyarli chiziqli ortadi. Kuch–cho‘zilish grafigi orqali Guk qonunini tekshirib, prujinaning qattiqligini (k) topamiz.",
     goal: "Guk qonuni bo'yicha k ni aniqlash.",
     materials: ["Prujina", "osma tarozi", "toshlar", "chizg'ich"],
     steps: [
@@ -228,6 +250,12 @@ export const experiments: Experiment[] = [
       "Har bir yukdan keyin cho'zilishni yozing.",
       "F = kx grafikidan k ni toping.",
     ],
+    observations: [
+      "Har bir yuk uchun cho‘zilish \(x\) ni jadvalga yozing.",
+      "Grafikni chizishda nuqtalarni tekislashtiruvchi to‘g‘ri chiziq o‘tkazing.",
+    ],
+    expectedResult:
+      "Kuch–cho‘zilish grafigi deyarli to‘g‘ri chiziq bo‘ladi; uning og‘ish burchagi (nishabligi) prujina qattiqligiga mos keladi.",
   },
 ]
 
