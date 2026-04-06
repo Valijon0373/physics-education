@@ -25,7 +25,7 @@ export function Home() {
             id="home-hero-heading"
             className="font-display max-w-4xl text-2xl font-bold uppercase leading-snug tracking-wide drop-shadow-[0_2px_14px_rgba(0,0,0,0.55)] sm:text-3xl md:text-4xl lg:text-[2.65rem] lg:leading-tight"
           >
-            <span className="text-[#F39200]">7-sinf</span>{' '}
+            <span className="text-cyan-600 dark:text-cyan-400">7-sinf</span>{' '}
             <span className="text-white">Fizikada Mexanika</span>
             <br />
             <span className="text-white">O&apos;qitish</span>
@@ -33,7 +33,7 @@ export function Home() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/darslar"
-              className="inline-flex items-center justify-center rounded-md bg-[#F39200] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition hover:bg-[#d98300] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F39200]"
+              className="inline-flex items-center justify-center rounded-md bg-cyan-600 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600 dark:bg-cyan-500 dark:hover:bg-cyan-600 dark:focus-visible:outline-cyan-400"
             >
               Ba&apos;tafsil…
             </Link>
