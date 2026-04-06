@@ -5,7 +5,7 @@ export function Guides() {
     <div className="space-y-8">
       <div>
         <h1 className="font-display text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
-          Qo'llanmalar
+          Topshiriqlar
         </h1>
         <p className="mt-2 max-w-2xl text-slate-600 dark:text-slate-400">
           Qisqa qo‘llanmalar ro‘yxati. Haqiqiy PDF fayllarni `public/`

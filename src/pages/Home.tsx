@@ -48,8 +48,8 @@ export function Home() {
       </section>
 
       <section id="bolimlar">
-        <h2 className="font-display mb-8 text-2xl font-semibold text-slate-900 dark:text-white">
-          Bo‘limlar
+        <h2 className="font-display mb-8 text-center text-2xl font-semibold text-slate-900 dark:text-white">
+          O'quv dasturlari
         </h2>
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
@@ -73,7 +73,7 @@ export function Home() {
             },
             {
               to: '/qollanmalar',
-              title: "Qo'llanmalar",
+              title: 'Topshiriqlar',
               desc: "Formulalar, namunaviy hisobotlar — yuklab olish uchun.",
               accent: 'from-emerald-500/15 to-transparent',
             },

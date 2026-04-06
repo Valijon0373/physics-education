@@ -86,7 +86,7 @@ export function Layout() {
                 Tajribalar
               </NavLink>
               <NavLink to="/qollanmalar" className={navLinkClass}>
-                Qo'llanmalar
+                Topshiriqlar
               </NavLink>
             </nav>
             <ThemeToggle />
@@ -152,7 +152,7 @@ export function Layout() {
             className={mobileNavLinkClass}
             onClick={() => setMenuOpen(false)}
           >
-            Qo'llanmalar
+            Topshiriqlar
           </NavLink>
 
           <div className="mt-3 border-t border-slate-200 pt-4 dark:border-white/10">
