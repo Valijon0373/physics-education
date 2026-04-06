@@ -4,10 +4,10 @@ export function Experiments() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
+        <h1 className="font-display text-center text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
           Tajribalar
         </h1>
-        <p className="mt-2 max-w-2xl text-slate-600 dark:text-slate-400">
+        <p className="mx-auto mt-2 max-w-2xl text-center text-slate-600 dark:text-slate-400">
           Sinfdagi yoki uyda qilish mumkin bo‘lgan oddiy tajribalar — maqsad,
           materiallar va xavfsizlik eslatmalari bilan.
         </p>

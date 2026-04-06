@@ -51,14 +51,27 @@ export function Owner() {
           <div className="flex flex-col gap-10 lg:flex-row lg:items-stretch lg:gap-10">
             <div className="min-w-0 flex-1 text-left">
               <p className="text-base leading-relaxed text-slate-600 dark:text-slate-400">
-                Bu loyiha fizika fanining mexanika bo‘limi bo‘yicha ta’lim materiallarini yig‘ish va
-                tartibga solish uchun tayyorlangan. Harakat, kuch, energiya va boshqa mexanik
-                tushunchalarga oid darslar, mashqlar hamda qo‘llanmalar o‘quv jarayonini samarali
-                qo‘llab-quvvatlash maqsadida tuzilgan.
+                Salayeva Hilola Shuhrat qizi 2001-yil 7-aprelda Xorazm viloyati Xiva tumani
+                Polosulton mahallasida tug‘ilgan.
               </p>
               <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400">
-                Pastda loyiha muallifi haqida qisqa ma’lumot va ijtimoiy tarmoqlar orqali
-                kuzatishingiz mumkin!
+                2019-2023-yillarda Urganch davlat universitetining Fizika yo‘nalishida tahsil
+                olgan. Hozirda Urganch davlat pedagogika institutining magistratura bosqichi
+                2-kurs talabasi hisoblanadi.
+              </p>
+              <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400">
+                2021-yilda 8-sonli umumiy o‘rta ta’lim maktabida fizika o‘qituvchisi sifatida
+                faoliyat yuritgan. 2022-yildan boshlab 22-sonli umumiy o‘rta ta’lim maktabida
+                fizika o‘qituvchisi lavozimida ishlab kelmoqda.
+              </p>
+              <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400">
+                Bugungi kunga qadar ilmiy jurnal va to‘plamlarda 8 ta ilmiy maqolalari chop
+                etilgan. Hozirda “Mexanika bo‘limidan amaliy va tajriba mashg‘ulotlarini olib borishda va
+                to‘g‘ri tashkil qilishda innovatsion pedagogik texnologiyalardan foydalanish
+                metodikasi” mavzusida ilmiy izlanish olib bormoqda.
+              </p>
+              <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400">
+                ijtimoiy tarmoqlar orqali kuzatishingiz mumkin!
               </p>
             </div>
 

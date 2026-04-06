@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PhotoGalleryCoverflow } from '../components/PhotoGalleryCoverflow'
 import { galleryItems } from '../data/content'
@@ -6,6 +7,8 @@ import { galleryItems } from '../data/content'
 const HERO_BG = '/hero-banner.png'
 
 export function Home() {
+  const [showDetails, setShowDetails] = useState(false)
+
   return (
     <div className="space-y-16">
       <section
@@ -31,12 +34,13 @@ export function Home() {
             <span className="text-white">O&apos;qitish</span>
           </h1>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              to="/darslar"
+            <button
+              type="button"
+              onClick={() => setShowDetails((prev) => !prev)}
               className="inline-flex items-center justify-center rounded-md bg-cyan-600 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600 dark:bg-cyan-500 dark:hover:bg-cyan-600 dark:focus-visible:outline-cyan-400"
             >
-              Ba&apos;tafsil…
-            </Link>
+              {showDetails ? 'Yopish' : "Ba'tafsil…"}
+            </button>
             <Link
               to="/muallif"
               className="inline-flex items-center justify-center rounded-md border-2 border-white/90 bg-transparent px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
@@ -44,6 +48,51 @@ export function Home() {
               Muallif
             </Link>
           </div>
+
+          {showDetails && (
+            <div className="mt-6 max-w-4xl rounded-2xl bg-white/90 p-5 text-left text-slate-800 shadow-lg ring-1 ring-white/70 backdrop-blur-sm dark:bg-slate-900/85 dark:text-slate-200 dark:ring-white/10 sm:p-6">
+              <p className="leading-relaxed">
+                Ushbu sayt 7-sinf fizika kursining mexanika bo‘limi bo‘yicha bilimlarni
+                mustahkamlash va rivojlantirish maqsadida yaratilgan. Saytimizda o‘quvchilar
+                uchun sodda va tushunarli tarzda tuzilgan masalalar, qiziqarli tajribalar hamda
+                ularning batafsil tushuntirishlari jamlangan.
+              </p>
+              <p className="mt-3 leading-relaxed">
+                Asosiy e’tibor nazariy bilimni amaliyot bilan bog‘lashga qaratilgan. Har bir
+                mavzu bo‘yicha berilgan masalalar osondan murakkabga qarab tartiblangan bo‘lib,
+                o‘quvchilarning mustaqil fikrlashini rivojlantirishga xizmat qiladi.
+              </p>
+              <p className="mt-3 leading-relaxed">
+                Shuningdek, saytimizda uy sharoitida bajarish mumkin bo‘lgan oddiy va xavfsiz
+                tajribalar orqali fizika faniga bo‘lgan qiziqishni oshirish ko‘zda tutilgan.
+              </p>
+
+              <h2 className="mt-5 text-lg font-semibold text-slate-900 dark:text-white">
+                🎯 Saytning maqsadi:
+              </h2>
+              <ul className="mt-2 list-inside list-disc space-y-1 leading-relaxed">
+                <li>O‘quvchilarga mexanika mavzularini chuqur o‘rgatish</li>
+                <li>Masala yechish ko‘nikmalarini shakllantirish</li>
+                <li>Tajribalar orqali bilimlarni mustahkamlash</li>
+                <li>Fizikani qiziqarli va tushunarli qilish</li>
+              </ul>
+
+              <h2 className="mt-5 text-lg font-semibold text-slate-900 dark:text-white">
+                🔬 Saytda siz quyidagilarni topasiz:
+              </h2>
+              <ul className="mt-2 list-inside list-disc space-y-1 leading-relaxed">
+                <li>🧮 Har bir mavzu bo‘yicha masalalar to‘plami</li>
+                <li>📊 Bosqichma-bosqich yechimlar</li>
+                <li>🧪 Qiziqarli va oddiy tajribalar</li>
+                <li>📘 Nazariy tushuntirishlar</li>
+              </ul>
+
+              <p className="mt-4 leading-relaxed">
+                Bizning maqsadimiz — fizika fanini o‘rganishni oson, samarali va qiziqarli
+                qilishdir.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

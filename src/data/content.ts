@@ -234,20 +234,20 @@ export const experiments: Experiment[] = [
 export const guides: Guide[] = [
   {
     id: 'pdf1',
-    title: 'Mexanika — asosiy formulalar',
+    title: 'Krasvord-1',
     summary:
       "Kinematika, dinamika, ish-energiya bo'limlari uchun qisqa jadval va misollar.",
     pages: 8,
   },
   {
     id: 'pdf2',
-    title: 'Laboratoriya hisobot namunasi',
+    title: "So'z topshiriqi-1",
     summary: "Tajriba maqsadi, sxema, jadval va xulosa bo'limlari.",
     pages: 4,
   },
   {
     id: 'pdf3',
-    title: 'Masalalar to‘plami (1-bosqich)',
+    title: 'Krasvord-2',
     summary: "50 ta tanlangan masala va yo'riqnomalar.",
     pages: 24,
   },
