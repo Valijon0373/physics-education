@@ -56,7 +56,7 @@ export function Home() {
             {
               to: '/darslar',
               title: 'Video + mashqlar',
-              desc: "Har bir mavzu uchun embed video va yon panelda testlar.",
+              desc: "Har bir mavzuga oid video va mashqlar jamlangan bo'lim.",
               accent: 'from-cyan-500/20 to-transparent',
             },
             {
@@ -74,7 +74,7 @@ export function Home() {
             {
               to: '/qollanmalar',
               title: 'Topshiriqlar',
-              desc: "Formulalar, namunaviy hisobotlar — yuklab olish uchun.",
+              desc: "Krasvord va So'z topish topshirqlari mavjud bo'lim.",
               accent: 'from-emerald-500/15 to-transparent',
             },
           ].map((card) => {
