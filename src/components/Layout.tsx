@@ -85,8 +85,11 @@ export function Layout() {
               <NavLink to="/tajribalar" className={navLinkClass}>
                 Tajribalar
               </NavLink>
-              <NavLink to="/qollanmalar" className={navLinkClass}>
+              <NavLink to="/topshiriqlar" className={navLinkClass}>
                 Topshiriqlar
+              </NavLink>
+              <NavLink to="/qollanmalar" className={navLinkClass}>
+                Qo'llanmalar
               </NavLink>
             </nav>
             <ThemeToggle />
@@ -148,11 +151,18 @@ export function Layout() {
             Tajribalar
           </NavLink>
           <NavLink
-            to="/qollanmalar"
+            to="/topshiriqlar"
             className={mobileNavLinkClass}
             onClick={() => setMenuOpen(false)}
           >
             Topshiriqlar
+          </NavLink>
+          <NavLink
+            to="/qollanmalar"
+            className={mobileNavLinkClass}
+            onClick={() => setMenuOpen(false)}
+          >
+            Qo'llanmalar
           </NavLink>
 
           <div className="mt-3 border-t border-slate-200 pt-4 dark:border-white/10">

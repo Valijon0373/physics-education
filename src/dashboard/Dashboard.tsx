@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import {
+  Book,
   BookOpen,
   CheckCircle2,
   Eye,
@@ -53,6 +54,11 @@ export function AdminDashboard() {
     youtubeUrl: string
     pdfUrl: string | null
   }
+  type GuideAdminItem = {
+    id: string
+    name: string
+    pdfUrl: string | null
+  }
   type AdminGalleryItem = GalleryItem & { storagePath?: string }
   const [adminGalleryItems, setAdminGalleryItems] = useState<AdminGalleryItem[]>([])
   const [isUploading, setIsUploading] = useState(false)
@@ -76,6 +82,15 @@ export function AdminDashboard() {
   const [editingLessonId, setEditingLessonId] = useState<string | null>(null)
   const [previewLesson, setPreviewLesson] = useState<LessonAdminItem | null>(null)
   const [confirmDeleteLesson, setConfirmDeleteLesson] = useState<LessonAdminItem | null>(null)
+  const [guideItems, setGuideItems] = useState<GuideAdminItem[]>([])
+  const [isGuidesLoading, setIsGuidesLoading] = useState(false)
+  const [guideError, setGuideError] = useState('')
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false)
+  const [isGuideSaving, setIsGuideSaving] = useState(false)
+  const [guideName, setGuideName] = useState('')
+  const [guidePdf, setGuidePdf] = useState<File | null>(null)
+  const [editingGuideId, setEditingGuideId] = useState<string | null>(null)
+  const [confirmDeleteGuide, setConfirmDeleteGuide] = useState<GuideAdminItem | null>(null)
   const [experimentItems, setExperimentItems] = useState<ExperimentItem[]>([])
   const [isExperimentsLoading, setIsExperimentsLoading] = useState(false)
   const [experimentError, setExperimentError] = useState('')
@@ -105,6 +120,8 @@ export function AdminDashboard() {
   const experimentsTable = import.meta.env.VITE_SUPABASE_EXPERIMENTS_TABLE ?? 'experiments'
   const lessonsTable = import.meta.env.VITE_SUPABASE_LESSONS_TABLE ?? 'lessons'
   const lessonsBucket = import.meta.env.VITE_SUPABASE_LESSONS_BUCKET ?? galleryBucket
+  const guidesTable = import.meta.env.VITE_SUPABASE_GUIDES_TABLE ?? 'guides'
+  const guidesBucket = import.meta.env.VITE_SUPABASE_GUIDES_BUCKET ?? galleryBucket
 
   const toYoutubeEmbedUrl = (value: string) => {
     const raw = value.trim()
@@ -223,6 +240,36 @@ export function AdminDashboard() {
     void loadLessons()
   }, [])
 
+  const loadGuides = async (silent = false) => {
+    if (!silent) {
+      setGuideError('')
+      setIsGuidesLoading(true)
+    }
+
+    const { data, error } = await supabase
+      .from(guidesTable)
+      .select('id, name, pdf_url')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      setGuideError(`Qo'llanmalarni olishda xatolik: ${error.message}`)
+      if (!silent) setIsGuidesLoading(false)
+      return
+    }
+
+    const mapped = (data ?? []).map((row) => ({
+      id: String(row.id),
+      name: String(row.name ?? ''),
+      pdfUrl: (row.pdf_url as string | null) ?? null,
+    }))
+    setGuideItems(mapped)
+    if (!silent) setIsGuidesLoading(false)
+  }
+
+  useEffect(() => {
+    void loadGuides()
+  }, [])
+
   const loadExperiments = async (silent = false) => {
     if (!silent) {
       setExperimentError('')
@@ -288,6 +335,7 @@ export function AdminDashboard() {
     { label: 'Mashqlar', icon: BookOpen },
     { label: 'Tajribalar', icon: FlaskConical },
     { label: 'Topshiriqlar', icon: ListChecks },
+    { label: "Qo'llanmalar", icon: Book },
     { label: 'Galeriya', icon: Image },
   ]
 
@@ -451,6 +499,125 @@ export function AdminDashboard() {
       return
     }
     setLessonPdf(selectedFile)
+  }
+
+  const resetGuideModal = () => {
+    setEditingGuideId(null)
+    setGuideName('')
+    setGuidePdf(null)
+    setIsGuideModalOpen(false)
+  }
+
+  const onGuidePdfPick = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0]
+    if (!selectedFile) return
+    if (selectedFile.type !== 'application/pdf') {
+      setGuideError('Faqat PDF fayl yuklang.')
+      return
+    }
+    setGuidePdf(selectedFile)
+  }
+
+  const onSaveGuide = async () => {
+    if (!guideName.trim()) {
+      setGuideError('Nomini kiriting.')
+      return
+    }
+    if (!guidePdf && !editingGuideId) {
+      setGuideError('PDF fayl yuklang.')
+      return
+    }
+
+    setGuideError('')
+    setIsGuideSaving(true)
+    try {
+      let pdfUrl: string | null =
+        guideItems.find((item) => item.id === editingGuideId)?.pdfUrl ?? null
+      if (guidePdf) {
+        const extension = guidePdf.name.split('.').pop() ?? 'pdf'
+        const objectPath = `guides/${Date.now()}-${Math.random().toString(36).slice(2)}.${extension}`
+
+        const { error: uploadErrorData } = await supabase.storage
+          .from(guidesBucket)
+          .upload(objectPath, guidePdf, { upsert: false, contentType: 'application/pdf' })
+        if (uploadErrorData) throw new Error(`PDF yuklanmadi: ${uploadErrorData.message}`)
+
+        const { data: publicUrlData } = supabase.storage.from(guidesBucket).getPublicUrl(objectPath)
+        pdfUrl = publicUrlData.publicUrl || null
+      }
+
+      if (editingGuideId) {
+        let updated = false
+        for (const candidate of eqCandidatesForTaskId(editingGuideId)) {
+          const { data, error } = await supabase
+            .from(guidesTable)
+            .update({ name: guideName.trim(), pdf_url: pdfUrl })
+            .eq('id', candidate)
+            .select('id')
+          if (error) throw new Error(error.message)
+          if (data?.[0]) {
+            updated = true
+            break
+          }
+        }
+        if (!updated) throw new Error("Qo'llanma yangilanmadi: mos ID topilmadi.")
+      } else {
+        const { error: insertError } = await supabase
+          .from(guidesTable)
+          .insert({ name: guideName.trim(), pdf_url: pdfUrl })
+        if (insertError) throw new Error(insertError.message)
+      }
+
+      await loadGuides(true)
+      setTaskSuccess({
+        kind: editingGuideId ? 'updated' : 'created',
+        message: editingGuideId
+          ? "Qo'llanma muvaffaqiyatli yangilandi"
+          : "Qo'llanma muvaffaqiyatli qo'shildi",
+      })
+      resetGuideModal()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Saqlashda xatolik yuz berdi.'
+      setGuideError(`${message} (Table: "${guidesTable}", Bucket: "${guidesBucket}")`)
+    } finally {
+      setIsGuideSaving(false)
+    }
+  }
+
+  const onConfirmDeleteGuide = async () => {
+    const item = confirmDeleteGuide
+    setConfirmDeleteGuide(null)
+    if (!item) return
+    setGuideError('')
+    try {
+      if (item.pdfUrl) {
+        const baseUrl = String(import.meta.env.VITE_SUPABASE_URL ?? '').replace(/\/$/, '')
+        const prefix = `${baseUrl}/storage/v1/object/public/${guidesBucket}/`
+        if (item.pdfUrl.startsWith(prefix)) {
+          const objectPath = decodeURIComponent(item.pdfUrl.slice(prefix.length))
+          const { error: removeError } = await supabase.storage.from(guidesBucket).remove([objectPath])
+          if (removeError) console.warn("Qo'llanma PDF o'chirishda xato:", removeError.message)
+        }
+      }
+      let deleted = false
+      for (const candidate of eqCandidatesForTaskId(item.id)) {
+        const { error, count } = await supabase
+          .from(guidesTable)
+          .delete({ count: 'exact' })
+          .eq('id', candidate)
+        if (error) throw new Error(error.message)
+        if ((count ?? 0) > 0) {
+          deleted = true
+          break
+        }
+      }
+      if (!deleted) throw new Error("Qo'llanma o'chirilmadi: mos ID topilmadi.")
+      await loadGuides(true)
+      setTaskSuccess({ kind: 'deleted', message: "Qo'llanma muvaffaqiyatli o'chirildi" })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "O'chirishda xatolik."
+      setGuideError(message)
+    }
   }
 
   const onSaveLesson = async () => {
@@ -910,6 +1077,7 @@ export function AdminDashboard() {
                   { title: 'Mashqlar', value: `${lessonItems.length} ta` },
                   { title: 'Tajribalar', value: `${experimentItems.length} ta` },
                   { title: 'Topshiriqlar', value: `${taskItems.length} ta` },
+                  { title: "Qo'llanmalar", value: `${guideItems.length} ta` },
                   { title: 'Galeriya', value: `${adminGalleryItems.length} ta` },
                 ].map((card) => (
                   <article
@@ -1023,9 +1191,6 @@ export function AdminDashboard() {
                     Qo'shish
                   </button>
                 </div>
-                <p className="text-sm text-slate-500 dark:text-slate-300">
-                  Mavzu, qoida, YouTube link va PDF bilan yangi mashq qo‘shing.
-                </p>
                 {lessonError ? (
                   <p className="mt-3 rounded-md border border-rose-300 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:border-rose-500/50 dark:bg-rose-500/10 dark:text-rose-300">
                     {lessonError}
@@ -1042,66 +1207,71 @@ export function AdminDashboard() {
                     Hozircha mashqlar mavjud emas.
                   </p>
                 ) : (
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="mt-4 space-y-3">
                     {lessonItems.map((item) => (
                       <article
                         key={item.id}
-                        className="relative rounded-lg border border-slate-200 bg-white p-4 pt-11 dark:border-white/10 dark:bg-[#0d2438]"
+                        className="flex w-full items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#0d2438]"
                       >
-                        <div className="absolute right-2 top-2 z-10 flex items-center gap-2">
+                        <div className="min-w-0">
+                          <p className="text-xs uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
+                            {item.topic}
+                          </p>
+                          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.rule}</p>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {item.youtubeUrl ? (
+                              <a
+                                href={item.youtubeUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
+                              >
+                                YouTube
+                              </a>
+                            ) : null}
+                            {item.pdfUrl ? (
+                              <a
+                                href={item.pdfUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
+                              >
+                                PDF
+                              </a>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className="flex shrink-0 flex-wrap items-center gap-2">
                           <button
                             type="button"
                             onClick={() => setPreviewLesson(item)}
-                            className="rounded-full bg-white/95 p-2 text-amber-500 shadow-sm ring-1 ring-black/5 transition hover:bg-amber-50 dark:bg-slate-800/95 dark:text-amber-300 dark:ring-white/10 dark:hover:bg-slate-700"
+                            className="inline-flex items-center gap-2 rounded-md border border-cyan-500 px-3 py-1.5 text-sm font-semibold text-cyan-500 transition hover:bg-cyan-50 dark:text-cyan-300 dark:hover:bg-cyan-500/10"
                             aria-label="Ko'rish"
                             title="Ko'rish"
                           >
-                            <Eye className="h-[18px] w-[18px]" />
+                            <Eye className="h-4 w-4" />
+                            Ko'rish
                           </button>
                           <button
                             type="button"
                             onClick={() => startEditLesson(item)}
-                            className="rounded-full bg-white/95 p-2 text-cyan-600 shadow-sm ring-1 ring-black/5 transition hover:bg-cyan-50 dark:bg-slate-800/95 dark:text-cyan-300 dark:ring-white/10 dark:hover:bg-slate-700"
+                            className="inline-flex items-center gap-2 rounded-md border border-emerald-500 px-3 py-1.5 text-sm font-semibold text-emerald-500 transition hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-500/10"
                             aria-label="Tahrirlash"
                             title="Tahrirlash"
                           >
-                            <Pencil className="h-[18px] w-[18px]" />
+                            <Pencil className="h-4 w-4" />
+                            Tahrirlash
                           </button>
                           <button
                             type="button"
                             onClick={() => setConfirmDeleteLesson(item)}
-                            className="rounded-full bg-white/95 p-2 text-rose-600 shadow-sm ring-1 ring-black/5 transition hover:bg-rose-50 dark:bg-slate-800/95 dark:text-rose-400 dark:ring-white/10 dark:hover:bg-rose-950/50"
+                            className="inline-flex items-center gap-2 rounded-md border border-rose-500 px-3 py-1.5 text-sm font-semibold text-rose-500 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-500/10"
                             aria-label="O'chirish"
                             title="O'chirish"
                           >
-                            <Trash2 className="h-[18px] w-[18px]" />
+                            <Trash2 className="h-4 w-4" />
+                            O'chirish
                           </button>
-                        </div>
-                        <p className="text-xs uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
-                          {item.topic}
-                        </p>
-                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.rule}</p>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {item.youtubeUrl ? (
-                            <a
-                              href={item.youtubeUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
-                            >
-                              YouTube
-                            </a>
-                          ) : null}
-                          {item.pdfUrl ? (
-                            <a
-                              href={item.pdfUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="rounded-md border border-slate-300 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
-                            >
-                              PDF
-                            </a>
-                          ) : null}
                         </div>
                       </article>
                     ))}
@@ -1125,9 +1295,6 @@ export function AdminDashboard() {
                     Qo'shish
                   </button>
                 </div>
-                <p className="text-sm text-slate-500 dark:text-slate-300">
-                  Yangi topshiriq qo'shish uchun yuqoridagi tugmani bosing.
-                </p>
                 {taskError ? (
                   <p className="mt-3 rounded-md border border-rose-300 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:border-rose-500/50 dark:bg-rose-500/10 dark:text-rose-300">
                     {taskError}
@@ -1144,59 +1311,155 @@ export function AdminDashboard() {
                     Hozircha topshiriqlar mavjud emas.
                   </p>
                 ) : (
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="mt-4 space-y-3">
                     {taskItems.map((item) => (
                       <article
                         key={item.id}
-                        className="relative overflow-hidden rounded-lg border border-slate-200 bg-white p-3 pt-11 dark:border-white/10 dark:bg-[#0d2438]"
+                        className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#0d2438]"
                       >
-                        <div className="absolute right-2 top-2 z-10 flex items-center gap-2">
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white">{item.title}</p>
+                          <p className="mt-1 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                            {item.type === 'krasvord' ? 'Krasvord' : "So'z topshirig'i"}
+                          </p>
+                          {item.questions ? (
+                            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.questions}</p>
+                          ) : null}
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt={item.title}
+                              className="mt-3 h-28 w-full max-w-xs rounded-md object-cover"
+                            />
+                          ) : null}
+                        </div>
+                        <div className="flex shrink-0 flex-wrap items-center gap-2">
                           <button
                             type="button"
                             onClick={() => openTaskPreview(item)}
-                            className="rounded-full bg-white/95 p-2 text-amber-500 shadow-sm ring-1 ring-black/5 transition hover:bg-amber-50 dark:bg-slate-800/95 dark:text-amber-300 dark:ring-white/10 dark:hover:bg-slate-700"
+                            className="inline-flex items-center gap-2 rounded-md border border-cyan-500 px-3 py-1.5 text-sm font-semibold text-cyan-500 transition hover:bg-cyan-50 dark:text-cyan-300 dark:hover:bg-cyan-500/10"
                             aria-label="Ko‘rish"
                             title="Ko‘rish"
                           >
-                            <Eye className="h-[18px] w-[18px]" />
+                            <Eye className="h-4 w-4" />
+                            Ko'rish
                           </button>
                           <button
                             type="button"
                             onClick={() => startEditTask(item)}
-                            className="rounded-full bg-white/95 p-2 text-cyan-600 shadow-sm ring-1 ring-black/5 transition hover:bg-cyan-50 dark:bg-slate-800/95 dark:text-cyan-300 dark:ring-white/10 dark:hover:bg-slate-700"
+                            className="inline-flex items-center gap-2 rounded-md border border-emerald-500 px-3 py-1.5 text-sm font-semibold text-emerald-500 transition hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-500/10"
                             aria-label="Tahrirlash"
                             title="Tahrirlash"
                           >
-                            <Pencil className="h-[18px] w-[18px]" />
+                            <Pencil className="h-4 w-4" />
+                            Tahrirlash
                           </button>
                           <button
                             type="button"
                             onClick={() => setConfirmDeleteTask(item)}
-                            className="rounded-full bg-white/95 p-2 text-rose-600 shadow-sm ring-1 ring-black/5 transition hover:bg-rose-50 dark:bg-slate-800/95 dark:text-rose-400 dark:ring-white/10 dark:hover:bg-rose-950/50"
+                            className="inline-flex items-center gap-2 rounded-md border border-rose-500 px-3 py-1.5 text-sm font-semibold text-rose-500 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-500/10"
                             aria-label="O‘chirish"
                             title="O‘chirish"
                           >
-                            <Trash2 className="h-[18px] w-[18px]" />
+                            <Trash2 className="h-4 w-4" />
+                            O'chirish
                           </button>
                         </div>
-                        <p className="pr-24 text-sm font-semibold text-slate-900 dark:text-white">
-                          {item.title}
-                        </p>
-                        <p className="mt-1 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                          {item.type === 'krasvord' ? 'Krasvord' : "So'z topshirig'i"}
-                        </p>
-                        {item.questions ? (
-                          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                            {item.questions}
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </article>
+            </section>
+          ) : null}
+
+          {activeMenu === "Qo'llanmalar" ? (
+            <section className="space-y-4">
+              <article className="rounded-xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-[#0d2438]">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <h2 className="text-xl font-semibold">Qo'llanmalar</h2>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGuideError('')
+                      setEditingGuideId(null)
+                      setGuideName('')
+                      setGuidePdf(null)
+                      setIsGuideModalOpen(true)
+                    }}
+                    className="inline-flex items-center gap-2 rounded-lg border border-cyan-600 px-4 py-2 text-sm font-semibold text-cyan-700 transition hover:bg-cyan-50 dark:text-cyan-300 dark:hover:bg-cyan-500/10"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Qo'shish
+                  </button>
+                </div>
+                {guideError ? (
+                  <p className="mt-3 rounded-md border border-rose-300 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:border-rose-500/50 dark:bg-rose-500/10 dark:text-rose-300">
+                    {guideError}
+                  </p>
+                ) : null}
+              </article>
+
+              <article className="rounded-xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-[#0d2438]">
+                <h3 className="text-base font-semibold">Mavjud qo'llanmalar</h3>
+                {isGuidesLoading ? (
+                  <p className="mt-3 text-sm text-slate-500 dark:text-slate-300">Yuklanmoqda...</p>
+                ) : guideItems.length === 0 ? (
+                  <p className="mt-3 text-sm text-slate-500 dark:text-slate-300">
+                    Hozircha qo'llanmalar mavjud emas.
+                  </p>
+                ) : (
+                  <div className="mt-4 space-y-3">
+                    {guideItems.map((item) => (
+                      <article
+                        key={item.id}
+                        className="flex w-full items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#0d2438]"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                            {item.name}
                           </p>
-                        ) : null}
-                        {item.imageUrl ? (
-                          <img
-                            src={item.imageUrl}
-                            alt={item.title}
-                            className="mt-3 h-36 w-full rounded-md object-cover"
-                          />
-                        ) : null}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setGuideError('')
+                              setEditingGuideId(item.id)
+                              setGuideName(item.name)
+                              setGuidePdf(null)
+                              setIsGuideModalOpen(true)
+                            }}
+                            className="inline-flex items-center gap-2 rounded-md border border-emerald-500 px-3 py-1.5 text-sm font-semibold text-emerald-500 transition hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-500/10"
+                            aria-label="Tahrirlash"
+                            title="Tahrirlash"
+                          >
+                            <Pencil className="h-4 w-4" />
+                            Tahrirlash
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (item.pdfUrl) window.open(item.pdfUrl, '_blank', 'noopener,noreferrer')
+                            }}
+                            className="inline-flex items-center gap-2 rounded-md border border-cyan-500 px-3 py-1.5 text-sm font-semibold text-cyan-500 transition hover:bg-cyan-50 dark:text-cyan-300 dark:hover:bg-cyan-500/10"
+                            aria-label="Ko'rish"
+                            title="Ko'rish"
+                          >
+                            <Eye className="h-4 w-4" />
+                            Ko'rish
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmDeleteGuide(item)}
+                            className="inline-flex items-center gap-2 rounded-md border border-rose-500 px-3 py-1.5 text-sm font-semibold text-rose-500 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-500/10"
+                            aria-label="O'chirish"
+                            title="O'chirish"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            O'chirish
+                          </button>
+                        </div>
                       </article>
                     ))}
                   </div>
@@ -1227,9 +1490,6 @@ export function AdminDashboard() {
                     Qo'shish
                   </button>
                 </div>
-                <p className="text-sm text-slate-500 dark:text-slate-300">
-                  Mavzu, maqsad, opisaniya va YouTube link bilan tajriba qo'shing.
-                </p>
                 {experimentError ? (
                   <p className="mt-3 rounded-md border border-rose-300 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:border-rose-500/50 dark:bg-rose-500/10 dark:text-rose-300">
                     {experimentError}
@@ -1246,54 +1506,59 @@ export function AdminDashboard() {
                     Hozircha tajribalar mavjud emas.
                   </p>
                 ) : (
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="mt-4 space-y-3">
                     {experimentItems.map((item) => (
                       <article
                         key={item.id}
-                        className="relative mx-auto w-full max-w-[420px] rounded-lg border border-slate-200 bg-white p-4 pt-11 dark:border-white/10 dark:bg-[#0d2438]"
+                        className="flex w-full items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#0d2438]"
                       >
-                        <div className="absolute right-2 top-2 z-10 flex items-center gap-2">
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                            {item.title}
+                          </p>
+                          <p className="mt-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                            Maqsad
+                          </p>
+                          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{item.goal}</p>
+                          <p className="mt-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                            Opisaniya
+                          </p>
+                          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                            {item.description}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 flex-wrap items-center gap-2">
                           <button
                             type="button"
                             onClick={() => setPreviewExperiment(item)}
-                            className="rounded-full bg-white/95 p-2 text-amber-500 shadow-sm ring-1 ring-black/5 transition hover:bg-amber-50 dark:bg-slate-800/95 dark:text-amber-300 dark:ring-white/10 dark:hover:bg-slate-700"
+                            className="inline-flex items-center gap-2 rounded-md border border-cyan-500 px-3 py-1.5 text-sm font-semibold text-cyan-500 transition hover:bg-cyan-50 dark:text-cyan-300 dark:hover:bg-cyan-500/10"
                             aria-label="Ko'rish"
                             title="Ko'rish"
                           >
-                            <Eye className="h-[18px] w-[18px]" />
+                            <Eye className="h-4 w-4" />
+                            Ko'rish
                           </button>
                           <button
                             type="button"
                             onClick={() => startEditExperiment(item)}
-                            className="rounded-full bg-white/95 p-2 text-cyan-600 shadow-sm ring-1 ring-black/5 transition hover:bg-cyan-50 dark:bg-slate-800/95 dark:text-cyan-300 dark:ring-white/10 dark:hover:bg-slate-700"
+                            className="inline-flex items-center gap-2 rounded-md border border-emerald-500 px-3 py-1.5 text-sm font-semibold text-emerald-500 transition hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-500/10"
                             aria-label="Tahrirlash"
                             title="Tahrirlash"
                           >
-                            <Pencil className="h-[18px] w-[18px]" />
+                            <Pencil className="h-4 w-4" />
+                            Tahrirlash
                           </button>
                           <button
                             type="button"
                             onClick={() => setConfirmDeleteExperiment(item)}
-                            className="rounded-full bg-white/95 p-2 text-rose-600 shadow-sm ring-1 ring-black/5 transition hover:bg-rose-50 dark:bg-slate-800/95 dark:text-rose-400 dark:ring-white/10 dark:hover:bg-rose-950/50"
+                            className="inline-flex items-center gap-2 rounded-md border border-rose-500 px-3 py-1.5 text-sm font-semibold text-rose-500 transition hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-500/10"
                             aria-label="O'chirish"
                             title="O'chirish"
                           >
-                            <Trash2 className="h-[18px] w-[18px]" />
+                            <Trash2 className="h-4 w-4" />
+                            O'chirish
                           </button>
                         </div>
-                        <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                          {item.title}
-                        </p>
-                        <p className="mt-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                          Maqsad
-                        </p>
-                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{item.goal}</p>
-                        <p className="mt-2 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                          Opisaniya
-                        </p>
-                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                          {item.description}
-                        </p>
                       </article>
                     ))}
                   </div>
@@ -1589,6 +1854,98 @@ export function AdminDashboard() {
                 className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-700"
               >
                 {isLessonSaving ? 'Saqlanmoqda...' : editingLessonId ? 'Yangilash' : 'Saqlash'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {isGuideModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4">
+          <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/10 dark:bg-[#10283c]">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">
+                {editingGuideId ? "Qo'llanmani tahrirlash" : "Qo'llanma qo'shish"}
+              </h3>
+              <button
+                type="button"
+                onClick={resetGuideModal}
+                className="rounded-md p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10 dark:hover:text-slate-200"
+                aria-label="Yopish"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="mb-1 block text-sm font-medium">Nomi</label>
+                <input
+                  type="text"
+                  value={guideName}
+                  onChange={(event) => setGuideName(event.target.value)}
+                  placeholder="Qo'llanma nomini yozing"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-900"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">PDF yuklash</label>
+                <input
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  onChange={onGuidePdfPick}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-900"
+                />
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  {guidePdf
+                    ? `Tanlangan fayl: ${guidePdf.name}`
+                    : editingGuideId
+                      ? 'Yangi PDF tanlansa, avvalgisi almashtiriladi.'
+                      : 'PDF tanlanmagan'}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={resetGuideModal}
+                className="rounded-lg border border-sky-500 px-4 py-2 text-sm font-semibold text-sky-600 transition hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-500/10"
+              >
+                Bekor qilish
+              </button>
+              <button
+                type="button"
+                onClick={onSaveGuide}
+                disabled={isGuideSaving}
+                className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-700"
+              >
+                {isGuideSaving ? 'Saqlanmoqda...' : editingGuideId ? 'Yangilash' : 'Saqlash'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {confirmDeleteGuide ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4">
+          <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/10 dark:bg-[#10283c]">
+            <h3 className="text-lg font-semibold">Qo'llanmani o'chirmoqchimisiz?</h3>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{confirmDeleteGuide.name}</p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmDeleteGuide(null)}
+                className="rounded-lg border border-sky-500 px-4 py-2 text-sm font-semibold text-sky-600 transition hover:bg-sky-50 dark:text-sky-300 dark:hover:bg-sky-500/10"
+              >
+                Yo'q
+              </button>
+              <button
+                type="button"
+                onClick={onConfirmDeleteGuide}
+                className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700"
+              >
+                Ha
               </button>
             </div>
           </div>

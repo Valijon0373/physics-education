@@ -39,11 +39,9 @@ export function AdminLogin() {
   return (
     <div className="flex min-h-svh items-center justify-center bg-slate-100 px-4 py-10 dark:bg-slate-950">
       <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-md dark:border-white/10 dark:bg-slate-900">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Admin login</h1>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-          Login: <span className="font-medium">Salayeva</span>, Parol:{' '}
-          <span className="font-medium">Hilola</span>
-        </p>
+        <h1 className="text-center text-2xl font-semibold text-slate-900 dark:text-white">
+          Admin Login
+        </h1>
 
         <form className="mt-6 space-y-4" onSubmit={onSubmit}>
           <label className="block">

@@ -22,6 +22,7 @@ WITH CHECK (
     name LIKE 'admin-gallery/%'
     OR name LIKE 'tasks/%'
     OR name LIKE 'lessons/%'
+    OR name LIKE 'guides/%'
   )
 );
 
@@ -35,6 +36,7 @@ USING (
     name LIKE 'admin-gallery/%'
     OR name LIKE 'tasks/%'
     OR name LIKE 'lessons/%'
+    OR name LIKE 'guides/%'
   )
 )
 WITH CHECK (
@@ -43,6 +45,7 @@ WITH CHECK (
     name LIKE 'admin-gallery/%'
     OR name LIKE 'tasks/%'
     OR name LIKE 'lessons/%'
+    OR name LIKE 'guides/%'
   )
 );
 
@@ -56,5 +59,6 @@ USING (
     name LIKE 'admin-gallery/%'
     OR name LIKE 'tasks/%'
     OR name LIKE 'lessons/%'
+    OR name LIKE 'guides/%'
   )
 );

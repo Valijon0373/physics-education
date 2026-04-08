@@ -72,6 +72,14 @@ export default function App() {
             }
           />
           <Route
+            path="topshiriqlar"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Guides />
+              </Suspense>
+            }
+          />
+          <Route
             path="qollanmalar"
             element={
               <Suspense fallback={<PageLoader />}>
