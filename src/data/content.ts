@@ -59,30 +59,7 @@ export const lessons: Lesson[] = [
       "Tezlik, tezlanish va grafiklar — mexanikaning asoslari. Video bilan bir qatorda mashqlarni bajaring.",
     durationMin: 18,
     videoEmbedUrl: 'https://www.youtube.com/embed/ZM8ECpBUQEc',
-    exercises: [
-      {
-        id: 'k1',
-        question:
-          "Avtomobil 72 km/soat tezlik bilan harakatlanmoqda. Tezlikni m/s da ifodalang.",
-        options: ['10 m/s', '15 m/s', '20 m/s', '25 m/s'],
-        correctIndex: 2,
-        hint: '1 km/soat = 1000/3600 m/s',
-      },
-      {
-        id: 'k2',
-        question:
-          "Boshlang'ich tezlik 0, tezlanish 2 m/s². 5 sekunddan keyin tezlik qancha?",
-        options: ['5 m/s', '8 m/s', '10 m/s', '12 m/s'],
-        correctIndex: 2,
-      },
-      {
-        id: 'k3',
-        question:
-          "To'g'ri chiziqli tekis tezlanuvchan harakatda masofa qaysi formula bilan hisoblanadi?",
-        options: ['s = vt', 's = v₀t + at²/2', 's = at', 's = v²/a'],
-        correctIndex: 1,
-      },
-    ],
+    exercises: [],
   },
   {
     id: 'dinamika-1',

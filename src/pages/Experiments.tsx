@@ -1,6 +1,63 @@
-import { experiments } from '../data/content'
+import { useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase'
 
 export function Experiments() {
+  type ExperimentItem = {
+    id: string
+    title: string
+    goal: string
+    description: string
+    videoUrl: string
+  }
+
+  const [experiments, setExperiments] = useState<ExperimentItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+  const experimentsTable = import.meta.env.VITE_SUPABASE_EXPERIMENTS_TABLE ?? 'experiments'
+
+  const toYoutubeEmbedUrl = (value: string) => {
+    const raw = value.trim()
+    if (!raw) return ''
+    if (raw.includes('youtube.com/embed/')) return raw
+    const short = raw.match(/(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{6,})/)
+    if (short?.[1]) return `https://www.youtube.com/embed/${short[1]}`
+    const watch = raw.match(/[?&]v=([a-zA-Z0-9_-]{6,})/)
+    if (watch?.[1]) return `https://www.youtube.com/embed/${watch[1]}`
+    return raw
+  }
+
+  useEffect(() => {
+    const loadExperiments = async () => {
+      setError('')
+      setIsLoading(true)
+
+      const { data, error: loadError } = await supabase
+        .from(experimentsTable)
+        .select('id, title, goal, description, video_url')
+        .order('created_at', { ascending: false })
+
+      if (loadError) {
+        setError(`Tajribalarni olishda xatolik: ${loadError.message}`)
+        setExperiments([])
+        setIsLoading(false)
+        return
+      }
+
+      const mapped = (data ?? []).map((item) => ({
+        id: String(item.id),
+        title: String(item.title ?? ''),
+        goal: String(item.goal ?? ''),
+        description: String(item.description ?? ''),
+        videoUrl: toYoutubeEmbedUrl(String(item.video_url ?? '')),
+      }))
+
+      setExperiments(mapped)
+      setIsLoading(false)
+    }
+
+    void loadExperiments()
+  }, [experimentsTable])
+
   return (
     <div className="space-y-8">
       <div>
@@ -13,7 +70,26 @@ export function Experiments() {
         </p>
       </div>
 
-      <ul className="space-y-8">
+      {isLoading && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-300">
+          Tajribalar yuklanmoqda...
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200">
+          {error}
+        </div>
+      )}
+
+      {!isLoading && !error && experiments.length === 0 && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-300">
+          Hozircha tajribalar mavjud emas.
+        </div>
+      )}
+
+      {!isLoading && !error && experiments.length > 0 && (
+        <ul className="space-y-8">
         {experiments.map((exp) => (
           <li
             key={exp.id}
@@ -38,85 +114,36 @@ export function Experiments() {
 
                 <div className="overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-xl shadow-black/10 dark:border-white/10 dark:shadow-black/50">
                   <div className="aspect-video w-full">
-                    <iframe
-                      title={exp.title}
-                      src={exp.videoEmbedUrl}
-                      className="h-full w-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
+                    {exp.videoUrl ? (
+                      <iframe
+                        title={exp.title}
+                        src={exp.videoUrl}
+                        className="h-full w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-sm text-slate-300">
+                        Video havolasi topilmadi
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
 
-              <aside className="h-full">
-                <div className="flex h-full flex-col rounded-2xl border border-cyan-200 bg-slate-50 p-1 dark:border-cyan-500/20 dark:bg-slate-900/80">
-                  <div className="rounded-xl bg-white px-4 py-3 dark:bg-slate-950/50">
-                    <h3 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
-                      Opisaniya (yo‘riqnoma)
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Materiallar, bosqichlar, kuzatuvlar va kutiladigan natija.
-                    </p>
-                  </div>
-                  <div className="flex-1 space-y-5 overflow-y-auto p-4">
-                    <div>
-                      <h4 className="text-sm font-semibold uppercase tracking-wider text-cyan-700 dark:text-cyan-400/90">
-                        Materiallar
-                      </h4>
-                      <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-slate-700 dark:text-slate-300">
-                        {exp.materials.map((m) => (
-                          <li key={m}>{m}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h4 className="text-sm font-semibold uppercase tracking-wider text-cyan-700 dark:text-cyan-400/90">
-                        Bosqichlar
-                      </h4>
-                      <ol className="mt-2 list-inside list-decimal space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                        {exp.steps.map((s, i) => (
-                          <li key={`${exp.id}-step-${i}`}>{s}</li>
-                        ))}
-                      </ol>
-                    </div>
-
-                    {exp.observations && exp.observations.length > 0 && (
-                      <div>
-                        <h4 className="text-sm font-semibold uppercase tracking-wider text-cyan-700 dark:text-cyan-400/90">
-                          Kuzatuvlar
-                        </h4>
-                        <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-slate-700 dark:text-slate-300">
-                          {exp.observations.map((o, i) => (
-                            <li key={`${exp.id}-obs-${i}`}>{o}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {exp.expectedResult && (
-                      <div className="rounded-xl border border-slate-200 bg-white/60 px-4 py-3 text-sm text-slate-700 dark:border-white/10 dark:bg-slate-950/30 dark:text-slate-200/90">
-                        <span className="font-semibold text-slate-900 dark:text-white">
-                          Kutiladigan natija:{' '}
-                        </span>
-                        {exp.expectedResult}
-                      </div>
-                    )}
-
-                    {exp.safety && (
-                      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/25 dark:bg-amber-500/5 dark:text-amber-200/90">
-                        <span className="font-semibold">Xavfsizlik: </span>
-                        {exp.safety}
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <aside className="h-full rounded-2xl border border-cyan-200 bg-slate-50 p-5 dark:border-cyan-500/20 dark:bg-slate-900/80">
+                <h3 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+                  Qisqacha
+                </h3>
+                <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
+                  Ushbu tajriba haqida asosiy ma’lumotlar bazadan yuklandi.
+                </p>
               </aside>
             </div>
           </li>
         ))}
-      </ul>
+        </ul>
+      )}
     </div>
   )
 }

@@ -55,14 +55,6 @@ export function PhotoGalleryCoverflow({ items }: Props) {
                   loading="lazy"
                 />
               </div>
-              <div className="px-3 py-2.5 text-center sm:px-4 sm:py-3">
-                <p className="font-display text-sm font-semibold text-slate-800 dark:text-slate-100">
-                  {item.title}
-                </p>
-                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                  {item.caption}
-                </p>
-              </div>
             </div>
           </SwiperSlide>
         ))}

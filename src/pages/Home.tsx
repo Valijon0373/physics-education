@@ -1,13 +1,50 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PhotoGalleryCoverflow } from '../components/PhotoGalleryCoverflow'
-import { galleryItems } from '../data/content'
+import type { GalleryItem } from '../data/content'
+import { supabase } from '../lib/supabase'
 
 /** Qo‘ying: `public/hero-banner.png` (talabalar / ochiq havoda o‘qish fon rasmi). */
 const HERO_BG = '/hero-banner.png'
 
+function isGalleryStorageObject(name: string) {
+  return Boolean(name) && name !== '.emptyFolderPlaceholder'
+}
+
 export function Home() {
   const [showDetails, setShowDetails] = useState(false)
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([])
+  const galleryBucket = import.meta.env.VITE_SUPABASE_GALLERY_BUCKET ?? 'gallery'
+
+  useEffect(() => {
+    const load = async () => {
+      const { data, error } = await supabase.storage
+        .from(galleryBucket)
+        .list('admin-gallery', { limit: 100, sortBy: { column: 'name', order: 'desc' } })
+
+      if (error) {
+        setGalleryItems([])
+        return
+      }
+
+      const loadedItems = (data ?? [])
+        .filter((file) => isGalleryStorageObject(file.name))
+        .map((file, index) => {
+          const storagePath = `admin-gallery/${file.name}`
+          const { data: publicUrlData } = supabase.storage.from(galleryBucket).getPublicUrl(storagePath)
+          return {
+            id: file.id ?? `${storagePath}-${index}`,
+            title: file.name.replace(/\.[^/.]+$/, ''),
+            caption: "Supabase Storage orqali qo'shilgan rasm",
+            imageUrl: publicUrlData.publicUrl,
+          } satisfies GalleryItem
+        })
+
+      setGalleryItems(loadedItems)
+    }
+
+    void load()
+  }, [])
 
   return (
     <div className="space-y-16">

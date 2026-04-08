@@ -31,6 +31,14 @@ const Owner = lazy(async () => {
   const m = await import('./pages/Owner')
   return { default: m.Owner }
 })
+const AdminLogin = lazy(async () => {
+  const m = await import('./dashboard/Login')
+  return { default: m.AdminLogin }
+})
+const AdminDashboard = lazy(async () => {
+  const m = await import('./dashboard/Dashboard')
+  return { default: m.AdminDashboard }
+})
 
 export default function App() {
   return (
@@ -81,6 +89,24 @@ export default function App() {
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
+        <Route
+          path="/login"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <AdminLogin />
+            </Suspense>
+          }
+        />
+        <Route path="/admin" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <AdminDashboard />
+            </Suspense>
+          }
+        />
+        <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   )
