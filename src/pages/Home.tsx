@@ -158,9 +158,9 @@ export function Home() {
               accent: 'from-amber-500/15 to-transparent',
             },
             {
-              to: '/qollanmalar',
+              to: '/topshiriqlar',
               title: 'Topshiriqlar',
-              desc: "Krasvord va So'z topish topshirqlari mavjud bo'lim.",
+              desc: "Krasvord va so'z-topish topshiriqlari mavjud bo'lim.",
               accent: 'from-emerald-500/15 to-transparent',
             },
           ].map((card) => {

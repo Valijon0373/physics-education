@@ -27,6 +27,10 @@ const Guides = lazy(async () => {
   const m = await import('./pages/Guides')
   return { default: m.Guides }
 })
+const Tasks = lazy(async () => {
+  const m = await import('./pages/Tasks')
+  return { default: m.Tasks }
+})
 const Owner = lazy(async () => {
   const m = await import('./pages/Owner')
   return { default: m.Owner }
@@ -75,7 +79,7 @@ export default function App() {
             path="topshiriqlar"
             element={
               <Suspense fallback={<PageLoader />}>
-                <Guides />
+                <Tasks />
               </Suspense>
             }
           />
