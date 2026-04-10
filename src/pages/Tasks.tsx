@@ -243,15 +243,21 @@ export function Tasks() {
               </button>
             </div>
 
-            <div className={`grid gap-6 ${isWordTask ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
+            <div
+              className={`grid gap-6 md:items-start ${isWordTask ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}
+            >
               <div
-                className={`relative w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-950 dark:border-white/10 ${isWordTask ? 'min-h-[min(62vh,560px)] md:col-span-3 md:min-h-[520px]' : 'min-h-[min(48vh,400px)] md:min-h-[360px]'}`}
+                className={[
+                  'relative flex w-full self-start items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-transparent dark:border-white/10',
+                  isWordTask ? 'md:col-span-3' : 'md:col-span-2',
+                  'md:order-1',
+                ].join(' ')}
               >
                 {modalImageSrc ? (
                   <img
                     src={modalImageSrc}
                     alt="Topshiriq rasmi"
-                    className="absolute inset-0 h-full w-full object-cover object-center"
+                    className="block max-h-[min(82vh,760px)] w-full object-contain"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-slate-100 p-6 dark:bg-slate-900/80">
@@ -280,7 +286,7 @@ export function Tasks() {
               </div>
 
               {!isWordTask && (
-                <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/50">
+                <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/50 md:order-2">
                   <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                     Savollar
                   </p>
@@ -298,7 +304,7 @@ export function Tasks() {
                 </div>
               )}
 
-              <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/50">
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/50 md:order-3">
                 <label
                   htmlFor="task-time-select"
                   className="block text-sm font-medium text-slate-700 dark:text-slate-300"

@@ -1329,7 +1329,10 @@ export function AdminDashboard() {
                             <img
                               src={item.imageUrl}
                               alt={item.title}
-                              className="mt-3 h-28 w-full max-w-xs rounded-md object-cover"
+                              className={[
+                                'mt-3 h-32 w-full max-w-xs rounded-md bg-slate-100 dark:bg-slate-900',
+                                'object-contain',
+                              ].join(' ')}
                             />
                           ) : null}
                         </div>
