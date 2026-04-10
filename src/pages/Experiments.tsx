@@ -107,9 +107,6 @@ export function Experiments() {
                     </span>
                     {exp.goal}
                   </p>
-                  <p className="mt-3 max-w-3xl text-sm text-slate-600 dark:text-slate-400">
-                    {exp.description}
-                  </p>
                 </header>
 
                 <div className="overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-xl shadow-black/10 dark:border-white/10 dark:shadow-black/50">
@@ -135,8 +132,8 @@ export function Experiments() {
                 <h3 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
                   Qisqacha
                 </h3>
-                <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
-                  Ushbu tajriba haqida asosiy ma’lumotlar bazadan yuklandi.
+                <p className="mt-2 whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
+                  {exp.description?.trim() ? exp.description : "Hozircha qisqacha ma'lumot kiritilmagan."}
                 </p>
               </aside>
             </div>

@@ -2023,7 +2023,7 @@ export function AdminDashboard() {
 
       {isExperimentModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4">
-          <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/10 dark:bg-[#10283c]">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 shadow-xl dark:border-white/10 dark:bg-[#10283c]">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold">
                 {editingExperimentId ? 'Tajribani tahrirlash' : "Tajriba qo'shish"}
@@ -2065,8 +2065,8 @@ export function AdminDashboard() {
                   value={experimentDescription}
                   onChange={(event) => setExperimentDescription(event.target.value)}
                   placeholder="Opisaniyani yozing"
-                  rows={4}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-900"
+                  rows={8}
+                  className="min-h-[220px] w-full resize-y rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-900"
                 />
               </div>
               <div>
