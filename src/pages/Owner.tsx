@@ -3,7 +3,7 @@ import ownerPhoto from '../assets/owner.jpg'
 const socialLinks = [
   {
     label: 'Telegram',
-    href: '#',
+    href: 'https://t.me/HilolaSalayevaa',
     className:
       'bg-gradient-to-br from-sky-100 to-cyan-50 text-[#229ED9] shadow-sm shadow-sky-200/60 hover:shadow-md dark:from-sky-950/40 dark:to-slate-800 dark:text-sky-300',
     icon: IconTelegram,
@@ -79,7 +79,7 @@ export function Owner() {
               <div className="overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
                 <img
                   src={ownerPhoto}
-                  alt="Solayeva Hilola"
+                  alt="Salayeva Hilola Shuhrat qizi"
                   className="aspect-[4/5] w-full object-cover"
                   width={400}
                   height={500}
@@ -90,7 +90,7 @@ export function Owner() {
                 id="owner-card-name"
                 className="mt-5 font-display text-xl font-bold tracking-tight text-slate-900 dark:text-white"
               >
-                Solayeva Hilola
+                Salayeva Hilola Shuhrat qizi
               </h2>
               <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
                 Magistratura Talabasi, Fizika fani o&apos;qituvchisi
