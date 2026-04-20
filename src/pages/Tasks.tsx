@@ -34,7 +34,7 @@ export function Tasks() {
       const { data, error } = await supabase
         .from(tasksTable)
         .select('id, title, type, questions, image_url')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
 
       if (error) {
         if (!silentRefresh) {

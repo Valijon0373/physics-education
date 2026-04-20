@@ -34,7 +34,7 @@ export function Experiments() {
       const { data, error: loadError } = await supabase
         .from(experimentsTable)
         .select('id, title, goal, description, video_url')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
 
       if (loadError) {
         setError(`Tajribalarni olishda xatolik: ${loadError.message}`)

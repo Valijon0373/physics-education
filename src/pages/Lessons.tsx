@@ -21,7 +21,7 @@ export function Lessons() {
       const { data, error } = await supabase
         .from(lessonsTable)
         .select('id, topic, rule, youtube_url, pdf_url')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
 
       if (error) {
         setDbLessons([])
