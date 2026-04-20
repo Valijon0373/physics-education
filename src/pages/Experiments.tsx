@@ -15,14 +15,57 @@ export function Experiments() {
   const [error, setError] = useState('')
   const experimentsTable = import.meta.env.VITE_SUPABASE_EXPERIMENTS_TABLE ?? 'experiments'
 
+  const withYoutubeEmbedParams = (embedUrl: string) => {
+    const url = embedUrl.trim()
+    if (!url) return ''
+    if (!url.includes('/embed/')) return url
+
+    try {
+      const u = new URL(url)
+      // Reduce “More videos / related” overlays as much as YouTube allows.
+      u.searchParams.set('rel', '0')
+      u.searchParams.set('modestbranding', '1')
+      u.searchParams.set('iv_load_policy', '3')
+      u.searchParams.set('playsinline', '1')
+      return u.toString()
+    } catch {
+      // If URL parsing fails, fall back to the original string.
+      return url
+    }
+  }
+
   const toYoutubeEmbedUrl = (value: string) => {
-    const raw = value.trim()
+    const raw = String(value ?? '').trim()
     if (!raw) return ''
-    if (raw.includes('youtube.com/embed/')) return raw
+
+    // If it's already an embed URL, keep it (but normalize domain).
+    if (raw.includes('youtube.com/embed/') || raw.includes('youtube-nocookie.com/embed/')) {
+      return withYoutubeEmbedParams(
+        raw.replace('https://www.youtube.com/embed/', 'https://www.youtube-nocookie.com/embed/'),
+      )
+    }
+
+    // If user stored only the video id.
+    if (/^[a-zA-Z0-9_-]{6,}$/.test(raw)) {
+      return withYoutubeEmbedParams(`https://www.youtube-nocookie.com/embed/${raw}`)
+    }
+
+    // youtu.be/<id>
     const short = raw.match(/(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{6,})/)
-    if (short?.[1]) return `https://www.youtube.com/embed/${short[1]}`
+    if (short?.[1]) return withYoutubeEmbedParams(`https://www.youtube-nocookie.com/embed/${short[1]}`)
+
+    // youtube.com/watch?v=<id>
     const watch = raw.match(/[?&]v=([a-zA-Z0-9_-]{6,})/)
-    if (watch?.[1]) return `https://www.youtube.com/embed/${watch[1]}`
+    if (watch?.[1]) return withYoutubeEmbedParams(`https://www.youtube-nocookie.com/embed/${watch[1]}`)
+
+    // youtube.com/shorts/<id>
+    const shorts = raw.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{6,})/)
+    if (shorts?.[1]) return withYoutubeEmbedParams(`https://www.youtube-nocookie.com/embed/${shorts[1]}`)
+
+    // youtube.com/live/<id>
+    const live = raw.match(/youtube\.com\/live\/([a-zA-Z0-9_-]{6,})/)
+    if (live?.[1]) return withYoutubeEmbedParams(`https://www.youtube-nocookie.com/embed/${live[1]}`)
+
     return raw
   }
 
