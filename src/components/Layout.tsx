@@ -62,7 +62,6 @@ export function Layout() {
           preload="auto"
           aria-hidden
         />
-        <div className="absolute inset-0 bg-slate-50/52 dark:bg-slate-950/62" />
       </div>
 
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-md dark:border-white/10 dark:bg-slate-950/90">
@@ -177,7 +176,7 @@ export function Layout() {
         </Suspense>
       </main>
 
-      <footer className="border-t border-slate-200 py-8 text-center text-sm text-slate-500 dark:border-white/10">
+      <footer className="border-t border-slate-200 py-8 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-100">
         <p>Mexanika fizikasi — ta'lim loyihasi</p>
       </footer>
     </div>

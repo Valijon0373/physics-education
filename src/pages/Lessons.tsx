@@ -46,12 +46,15 @@ export function Lessons() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-center text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
-          Mashqlar
+        <h1 className="text-center">
+          <span className="font-display inline-flex rounded-2xl bg-white/90 px-5 py-2 text-3xl font-bold text-slate-900 shadow-sm ring-1 ring-black/5 backdrop-blur-sm dark:bg-slate-950/55 dark:text-white dark:ring-white/10 sm:text-4xl">
+            Mashqlar
+          </span>
         </h1>
-        <p className="mx-auto mt-2 max-w-2xl text-center text-slate-600 dark:text-slate-400">
-          Ro‘yxatdan mavzuni tanlang — katta ekranda video chapda, mashqlar
-          o‘ngda joylashgan.
+        <p className="mx-auto mt-3 max-w-2xl text-center">
+          <span className="inline-flex rounded-2xl bg-white/85 px-4 py-2 text-slate-700 shadow-sm ring-1 ring-black/5 backdrop-blur-sm dark:bg-slate-950/45 dark:text-slate-200 dark:ring-white/10">
+            Ro‘yxatdan mavzuni tanlang — katta ekranda video chapda, mashqlar o‘ngda joylashgan.
+          </span>
         </p>
       </div>
 

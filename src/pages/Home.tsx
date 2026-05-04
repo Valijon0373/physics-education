@@ -134,8 +134,10 @@ export function Home() {
       </section>
 
       <section id="bolimlar">
-        <h2 className="font-display mb-8 text-center text-2xl font-semibold text-slate-900 dark:text-white">
-          O'quv dasturlari
+        <h2 className="mb-8 text-center">
+          <span className="font-display inline-flex rounded-2xl bg-white/90 px-5 py-2 text-2xl font-semibold text-slate-900 shadow-sm ring-1 ring-black/5 backdrop-blur-sm dark:bg-slate-950/55 dark:text-white dark:ring-white/10">
+            O'quv dasturlari
+          </span>
         </h2>
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[

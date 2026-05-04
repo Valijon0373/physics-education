@@ -158,11 +158,15 @@ export function Tasks() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-center text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
-          Topshiriqlar
+        <h1 className="text-center">
+          <span className="font-display inline-flex rounded-2xl bg-white/90 px-5 py-2 text-3xl font-bold text-slate-900 shadow-sm ring-1 ring-black/5 backdrop-blur-sm dark:bg-slate-950/55 dark:text-white dark:ring-white/10 sm:text-4xl">
+            Topshiriqlar
+          </span>
         </h1>
-        <p className="mx-auto mt-2 max-w-2xl text-center text-slate-600 dark:text-slate-400">
-          Bu yerda Krasvord va So'z o'yinlarni bajarish orqali bilimingizni oshiring
+        <p className="mx-auto mt-3 max-w-2xl text-center">
+          <span className="inline-flex rounded-2xl bg-white/85 px-4 py-2 text-slate-700 shadow-sm ring-1 ring-black/5 backdrop-blur-sm dark:bg-slate-950/45 dark:text-slate-200 dark:ring-white/10">
+            Bu yerda Krasvord va So'z o'yinlarni bajarish orqali bilimingizni oshiring
+          </span>
         </p>
       </div>
 
@@ -183,8 +187,8 @@ export function Tasks() {
           Hozircha topshiriqlar yo‘q. Admin panel orqali qo‘shing.
         </div>
       ) : (
-        <div className="overflow-hidden rounded-3xl border border-white/15 bg-slate-950/30 shadow-xl backdrop-blur-md dark:border-white/10">
-          <ul className="divide-y divide-white/10">
+        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white/90 shadow-xl ring-1 ring-black/5 backdrop-blur-md dark:border-white/10 dark:bg-slate-950/30 dark:ring-white/10">
+          <ul className="divide-y divide-slate-300/80 dark:divide-white/15">
             {tasks.map((task) => {
               const description = (task.questions ?? '').trim()
               const isReady = Boolean(task.imageUrl || description)
@@ -192,11 +196,13 @@ export function Tasks() {
                 <li key={task.id} className="px-5 py-5 sm:px-8">
                   <div className="flex items-center justify-between gap-6">
                     <div className="min-w-0">
-                      <p className="text-base font-semibold text-white sm:text-lg">{task.title}</p>
-                      <p className="mt-1 line-clamp-2 text-sm text-white/70">
+                      <p className="text-base font-semibold text-slate-900 dark:text-white sm:text-lg">
+                        {task.title}
+                      </p>
+                      <p className="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-white/70">
                         {description || "Tez orada batafsil ma'lumot joylanadi."}
                       </p>
-                      <p className="mt-2 text-xs text-white/50">
+                      <p className="mt-2 text-xs text-slate-500 dark:text-white/50">
                         {task.type === 'krasvord' ? 'Krasvord' : "So'z topshirig'i"}
                       </p>
                     </div>
@@ -205,12 +211,12 @@ export function Tasks() {
                       <button
                         type="button"
                         onClick={() => setActiveTaskId(task.id)}
-                        className="shrink-0 rounded-xl border border-cyan-400/70 bg-transparent px-5 py-2 text-sm font-semibold text-cyan-100 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-500/10"
+                        className="shrink-0 rounded-xl border border-cyan-600/40 bg-transparent px-5 py-2 text-sm font-semibold text-cyan-700 shadow-sm transition hover:border-cyan-600/70 hover:bg-cyan-500/10 dark:border-cyan-400/70 dark:text-cyan-100 dark:hover:border-cyan-300"
                       >
                         Bajarish
                       </button>
                     ) : (
-                      <span className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-5 py-2 text-sm font-semibold text-white/70">
+                      <span className="shrink-0 rounded-xl border border-slate-200 bg-slate-50 px-5 py-2 text-sm font-semibold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
                         Tez orada
                       </span>
                     )}

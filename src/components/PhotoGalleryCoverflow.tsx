@@ -17,8 +17,8 @@ export function PhotoGalleryCoverflow({ items }: Props) {
   if (items.length === 0) return null
 
   return (
-    <div className="photo-gallery-coverflow rounded-2xl bg-[#f0f2f5] px-3 py-10 shadow-inner dark:bg-slate-900/80 sm:px-6 sm:py-12">
-      <h2 className="mb-8 text-center font-display text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 sm:text-2xl">
+    <div className="photo-gallery-coverflow rounded-2xl bg-[#f0f2f5] px-3 py-8 shadow-inner dark:bg-slate-900/80 sm:px-6 sm:py-10">
+      <h2 className="mb-6 text-center font-display text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 sm:text-2xl">
         — Foto galereya —
       </h2>
 
@@ -45,7 +45,7 @@ export function PhotoGalleryCoverflow({ items }: Props) {
         className="photo-gallery-swiper !pb-12"
       >
         {items.map((item) => (
-          <SwiperSlide key={item.id} className="!w-[min(78vw,400px)]">
+          <SwiperSlide key={item.id} className="!w-[min(70vw,320px)]">
             <div className="overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 dark:bg-slate-800 dark:ring-white/10">
               <div className="aspect-[4/3] w-full overflow-hidden">
                 <img
