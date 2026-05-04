@@ -38,7 +38,7 @@ export function Owner() {
         <div className="flex shrink-0 justify-start lg:w-28 xl:w-32">
           <h1
             id="owner-page-title"
-            className="font-display text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:pt-2 lg:text-5xl lg:leading-none xl:text-6xl lg:[writing-mode:vertical-rl]"
+            className="font-display text-3xl font-bold tracking-tight text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)] dark:text-white sm:text-4xl lg:pt-2 lg:text-5xl lg:leading-none xl:text-6xl lg:[writing-mode:vertical-rl]"
           >
             Muallif
           </h1>
